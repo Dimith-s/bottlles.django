@@ -1,0 +1,85 @@
+{% extends "admin_temp/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="card mb-4">
+                
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <div class="table-responsive" id='userTable'>
+                            <table class="table align-middle table-nowrap mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        
+                                        <th class="align-middle text-center" scope="col">first_name</th>
+                                        <th class="align-middle text-center" scope="col">last_name</th>
+                                        <th class="align-middle text-center" scope="col">email</th>
+                                        <th class="align-middle text-center" scope="col">phone number</th>
+                                        <th class="align-middle text-center" scope="col">action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for user in user_list  %}
+                                
+                                
+                                    <tr>
+                                        <td class="align-middle text-center"><a href="#" class="fw-bold">{{ user.first_name }}</a> </td>
+                                        <td class="align-middle text-center">{{user.last_name}}</td>
+                                        <td class="align-middle text-center">
+                                            {{user.email}}
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            {{user.phone_number}}
+                                        </td>
+                                        
+                                        <td class="align-middle text-center">
+                                            {% comment %} <a href="#" class="btn btn-xs"> View details</a> {% endcomment %}
+                                            {% if user.is_blocked %}
+                                                <a href="#" class="btn btn-xs userbutton" data-user-id="{{user.id}}"> Unblock</a>
+                                            {% else %}
+                                                <a href="#" class="btn btn-xs userbutton" data-user-id="{{user.id}}"> Block</a>
+                                            {% endif %}
+                                            
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- table-responsive end// -->
+                </div>
+            </div>
+            {% comment %} <div class="pagination-area mt-30 mb-50">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-start">
+                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                        <li class="page-item"><a class="page-link" href="#">02</a></li>
+                        <li class="page-item"><a class="page-link" href="#">03</a></li>
+                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                        <li class="page-item"><a class="page-link" href="#">16</a></li>
+                        <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+                    </ul>
+                </nav>
+            </div> {% endcomment %}
+        </section> <!-- content-main end// -->
+
+{% endblock content %}
+
+
+{% block script %}
+<script>
+    $(document).on('click', '.userbutton', function(e) {
+        e.preventDefault()
+        var userId = $(this).data('user-id')
+        $.ajax({
+            url:"/adminone/user-block/" + userId,
+            success:function(response){
+                console.log(response)
+                $('#userTable').load(location.href + ' #userTable')
+            }
+        })
+    })
+</script>
+{% endblock script %}   

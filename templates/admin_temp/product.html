@@ -1,0 +1,84 @@
+{% extends "admin_temp/base.html" %}
+
+
+{% load static %}
+
+{% block content %}
+<a href="{% url 'addproduct'%}" class="btn btn-xs" style = "background: grey"> ADD PRODUCTS</a>
+<div class="card mb-4">
+                
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <div class="table-responsive" id = 'producttable'>
+                            <table class="table align-middle table-nowrap mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        
+                                        <th class="align-middle text-center" scope="col">product name</th>
+                                        <th class="align-middle text-center" scope="col">prize</th>
+                                        <th class="align-middle text-center" scope="col">category</th>
+                                        <th class="align-middle text-center" scope="col">images</th>
+                                        <th class="align-middle text-center" scope="col">is active</th>
+                                        <th class="align-middle text-center" scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for product in product_list  %}
+                                
+                                
+                                    <tr>
+                                        <td class="align-middle text-center"><a href="#" class="fw-bold">{{ product.product_name }}</a> </td>
+                                        <td class="align-middle text-center">{{product.prize}}</td>
+                                        <td class="align-middle text-center">
+                                            {{product.category}}
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <img src="{{product.images.url}}" class="img-sm img-thumbnail" alt="Item">
+                                        </td>
+                                        <td class="align-middle text-center">{{product.is_available}}</td>
+                                        <td class="align-middle text-center">
+                                            {% comment %} <a href="#" class="btn btn-xs"> View details</a> {% endcomment %}
+                                            {% comment %} <a href="#" class="btn btn-xs"> Block</a> {% endcomment %}
+                                            {% if product.is_available %}
+                                                <a href="#" class="btn btn-xs productbutton" data-product-id={{product.id}}> Soft Delete</a>
+                                            
+                                            {% else %}
+                                                <a href="#" class="btn btn-xs productbutton" data-product-id={{product.id}}>undo Delete</a>
+                                            {% endif %}
+                                            
+                                            <a href="{% url 'editproduct' product.id  %}" class="btn btn-xs" style = "background: blue"> edit</a>
+                                            <a href="{% url 'deleteproduct' product.id  %}" class="btn btn-xs" style = "background: black"> Delete</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- table-responsive end// -->
+                </div>
+            </div>
+
+
+
+{% endblock content %}
+
+{% block script %}
+
+<script>
+    $(document).on('click',' .productbutton',function(e){
+        e.preventDefault()
+        var product_id = $(this).data('product-id')
+        console.log('product id :', product_id)
+        $.ajax({
+            url:"/adminone/product-block/" + product_id,
+            success:function(response){
+                console.log(response)
+                $('#producttable').load(location.href + ' #producttable')
+            }
+        })
+    })
+
+</script>
+
+{% endblock script %}

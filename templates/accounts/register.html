@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content  %}
+
+                            {% comment %}<div class="col-lg-1"></div> {% endcomment %}
+                            <div class="row justify-content-center">
+                            <div class="col-lg-6 mt-50" >
+                                <div class="login_wrap widget-taber-content p-30 background-white border-radius-5 ">
+                                    <div class="padding_eight_all bg-white justify-content-center">
+                                        <div class="heading_s1">
+                                            <h3 class="mb-30">Create an Account</h3>
+                                        </div>
+            
+                                        {% include "includes/alerts.html" %}
+                                        <form action="{% url 'register' %}" method="post">
+                                        {% csrf_token %}
+                                            <div class="form-group">
+                                    
+                                                {{ form.first_name }}
+                                            </div>
+                                            <div class="form-group">
+                                            
+                                                {{ form.last_name }}
+                                            </div>
+                                            <div class="form-group">
+                                            
+                                                {{ form.phone_number }}
+                                            </div>
+                                            <div class="form-group">
+                                            
+                                                {{ form.email }}
+                                            </div>
+                                            <div class="form-group">
+                                            
+                                                {{ form.password }}
+                                            </div>
+                                            <div class="form-group">
+                                            
+                                                {{ form.confirm_password }}
+                                            </div>
+                                            {{ form.email.errors}}
+                                            {{ form.non_field_errors}}
+                                        
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-fill-out btn-block hover-up" name="login">SignUp</button>
+                                            </div>
+                                        </form>
+                                
+                                        <div class="text-muted text-center">Already have an account? <a href="{% url 'login' %}">Sign in now</a></div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>                                                                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+{% endblock  %}
+
