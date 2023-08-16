@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.utils.text import slugify
 
 # Create your models here.
 class category(models.Model):
@@ -19,3 +20,8 @@ class category(models.Model):
 
     def __str__(self) -> str:
         return self.category_name
+    
+    def save(self, *args, **kwargs):
+        # Generate the slug from the product name
+        self.slug = slugify(self.category_name)
+        super(category, self).save(*args, **kwargs)

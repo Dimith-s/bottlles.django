@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="mt-50 mb-50">
+            <div class="container">
+            
+                <div class="row">
+                    <div class="col-md-6">
+                    <div class="col-lg-6">
+                        {% for i in address %}
+                        <div class="card-deck">
+                            <div class="card">
+                              
+                              <div class="card-body">
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                        value="{{i.id}}" type="radio"
+                                        name="flexRadioDefault" id="flexRadioDefault1" checked >
+                                </div>
+                                <address>{{i.name}}<br>{{i.city}},<br> {{i.state}} <br>{{i.pincode}},<br>{{i.phone}}</address>
+                                <p>{{i.address}}</p>
+                                <a href="#" class="btn-small">Edit</a>
+                              </div>
+                            </div>
+                        </div>
+                        {% endfor %}  
+
+
+
+                                                {% comment %} <div class="card mb-3 mb-lg-0">
+                                                    <div class="card-header">
+                                                        <h5 class="mb-0">Billing Address</h5>
+                                                    </div>
+                                                    {% for i in address %}
+                                                    
+                                                    <div class="card-body">
+                                                        <address>{{i.name}}<br>{{i.city}},<br> Sault Ste. <br>Marie, MI 49783</address>
+                                                        <p>New York</p>
+                                                        <a href="#" class="btn-small">Edit</a>
+                                                    </div>
+                                                      {% endfor %}  
+                                                </div> {% endcomment %}
+                                            </div>
+
+                      <div class="mb-25">
+   
+</div>
+<div class="mb-25">
+    <h4>Billing Details</h4>
+</div>
+<form action="{% url 'add_address' %}" method="post">
+    {% csrf_token %}
+    <div class="accordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="personalInfo">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#personalCollapse" aria-expanded="true" aria-controls="personalCollapse">
+                    Personal Information
+                </button>
+            </h2>
+            <div id="personalCollapse" class="accordion-collapse collapse show" aria-labelledby="personalInfo" data-bs-parent=".accordion">
+                <div class="accordion-body">
+                    <div class="form-group">
+                        <input type="text" required="" name="name" placeholder=" Name *">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" required="" name="city" placeholder=" City *">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" required="" name="state" placeholder=" State *">
+                    </div>
+                    <div class="form-group">
+                        <input required="" type="text" name="pincode" placeholder="Pincode *">
+                    </div>
+                     <div class="form-group">
+                        <input required="" type="text" name="phone" placeholder="Phone *">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="address" required="" placeholder="Address *">
+                    </div>
+                  
+                    
+                    <!-- Other personal information fields -->
+                </div>
+            </div>
+        </div>
+       
+            
+        <!-- Other accordion items for remaining fields -->
+    </div>
+   
+    <!-- Other fields not in accordion -->
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="order_review">
+                            <div class="mb-20">
+                                <h4>Your Orders</h4>
+                            </div>
+                            <div class="table-responsive order_table text-center">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">Product</th>
+                                            <th>quantity</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    
+                                    {% for cart_item in cart_items  %}
+                                    <tr>
+                                            <td class="image product-thumbnail"><img src="{{ cart_item.product.images.url }}" alt="#"></td>
+                                            <td>
+                                                <h5><a href="{{cart_item.product.get_url}}">{{ cart_item.product.product_name }}</a></h5> <span class="product-qty"></span>
+                                            </td>
+                                            <td> {{ cart_item.quantity }}</td>
+                                            <td>{{cart_item.product.prize}}</td>
+                                        </tr>
+                                    
+                                    {% endfor %}
+                                    
+                                        
+                                        
+                                        {% comment %} <tr>
+                                            <td class="image product-thumbnail"><img src="assets/imgs/shop/product-2-1.jpg" alt="#"></td>
+                                            <td>
+                                                <h5><a href="shop-product-full.html">LDB MOON Women Summe</a></h5> <span class="product-qty">x 1</span>
+                                            </td>
+                                            <td>$65.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="image product-thumbnail"><img src="assets/imgs/shop/product-3-1.jpg" alt="#"></td>
+                                            <td><i class="ti-check-box font-small text-muted mr-10"></i>
+                                                <h5><a href="shop-product-full.html">Women's Short Sleeve Loose</a></h5> <span class="product-qty">x 1</span>
+                                            </td>
+                                            <td>$35.00</td>
+                                        </tr> {% endcomment %}
+                                        <tr>
+                                            <th>SubTotal</th>
+                                            <td class="product-subtotal" colspan="2">{{ total }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Shipping</th>
+                                            <td colspan="2"><em>Free Shipping</em></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total</th>
+                                            <td colspan="2" class="product-subtotal"><span class="font-xl text-brand fw-900">{{ total }}</span></td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                            <div class="payment_method">
+                                <div class="mb-25">
+                                    <h5>Payment</h5>
+                                </div>
+                                <div class="payment_option">
+                                    {% comment %} <div class="custome-radio">
+                                        <input class="form-check-input" required="" type="radio" name="payment_option" id="exampleRadios3" checked="">
+                                        <label class="form-check-label" for="exampleRadios3" data-bs-toggle="collapse" data-target="#bankTranfer" aria-controls="bankTranfer">Direct Bank Transfer</label>
+                                        <div class="form-group collapse in" id="bankTranfer">
+                                            <p class="text-muted mt-5">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration. </p>
+                                        </div>
+                                    </div> {% endcomment %}
+                                    <div class="custome-radio">
+                                        <input class="form-check-input" required="" type="radio" name="payment_option" id="exampleRadios4" checked="">
+                                        <label class="form-check-label" for="exampleRadios4" data-bs-toggle="collapse" data-target="#checkPayment" aria-controls="checkPayment">COD</label>
+                                        {% comment %} <div class="form-group collapse in" id="checkPayment">
+                                            <p class="text-muted mt-5">Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store Postcode. </p>
+                                        </div> {% endcomment %}
+                                    </div>
+                                    <div class="custome-radio">
+                                        <input class="form-check-input" required="" type="radio" name="payment_option" id="exampleRadios5" checked="">
+                                        <label class="form-check-label" for="exampleRadios5" data-bs-toggle="collapse" data-target="#paypal" aria-controls="paypal">Razorpay</label>
+                                        <div class="form-group collapse in" id="paypal">
+                                            <p class="text-muted mt-5">Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                             <a href="{% url 'order_success' %}" >
+                            <button type='submit' name='submit' class="btn btn-fill-out btn-block mt-30"> Place Order</button>
+                             </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+        
+{% endblock  %}

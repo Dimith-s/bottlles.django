@@ -1,6 +1,7 @@
 from typing import Any
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
+from django.contrib.auth import get_user_model
 
 # Create your models here.
 class MyAccountManager(BaseUserManager):
@@ -67,3 +68,19 @@ class Accounts(AbstractBaseUser):
     
     def has_module_perms(self,add_label):
         return True
+
+User = get_user_model()
+
+
+class Address(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE, null=True) 
+    name = models.CharField(max_length=100,null=True)
+    address = models.CharField(max_length=100,null=True)
+    city = models.CharField(max_length=50) 
+    state = models.CharField(max_length=50,default='') 
+    pincode = models.IntegerField(blank=True)
+    phone = models.CharField(max_length=15,null=True)
+
+
+    def _str_(self):
+        return self.name

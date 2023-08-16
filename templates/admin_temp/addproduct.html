@@ -19,10 +19,17 @@
                 <div class="col-lg-8">
                     <div class="card mb-6">
                         <div class="card-body">
-                            <form method='POST' enctype="multipart/form-data">
+                            <form method='POST' enctype="multipart/form-data" id='productFormm'>
                             {% csrf_token %}
                                 {{form.as_p}}
-                                <button type="submit" class="btn btn-secondary mt-10">Submit</button>
+
+                                <div id='image-container' class='mt-10'>
+                                </div>
+
+                                <diV class='d-flex justify-content-between'>
+                                    <button type="submit" class="btn btn-secondary mt-10">Submit</button>
+                                    <button type="button" class="btn btn-secondary mt-10" id='add-image-butn'>Add more image</button>
+                                </div>
                                 
                             </form>
                         </div>
@@ -33,3 +40,36 @@
         </section> <!-- content-main end// -->
 
 {% endblock  %}
+
+
+
+{% block script %}
+    <script>
+    var addButton = document.getElementById('add-image-butn')
+    var container = document.getElementById('image-container')
+    var imageCount = 1
+
+    addButton.addEventListener('click', function(){
+        var imageField = document.createElement('input')
+        imageField.type = 'file'
+        imageField.className = 'form-control image-field mt-10'
+        imageField.name = 'pr_images';
+        container.appendChild(imageField)
+        imageCount++
+    });
+
+    $(document).on('submit','#productFormm', function(e) {
+        e.preventDefault()
+        var productName = document.getElementById('id_product_name').value.trim()
+        if (productName.length == 0 || productName.length < 3) {
+            swal({
+                title:'Warning',
+                text:'Product name must have minimum 3 charactes',
+                icon:'warning',
+            })
+            return
+        }
+        this.submit()
+    })
+</script>
+{% endblock script %}

@@ -47,10 +47,10 @@
                                     <div class="tab-pane fade active show" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
                                         <div class="card">
                                             <div class="card-header">
-                                                <h5 class="mb-0">Hello Rosie! </h5>
+                                                <h5 class="mb-0">{{user.last_name}} </h5>
                                             </div>
                                             <div class="card-body">
-                                                <p>From your account dashboard. you can easily check &amp; view your <a href="#">recent orders</a>, manage your <a href="#">shipping and billing addresses</a> and <a href="#">edit your password and account details.</a></p>
+                                                <p>From your account dashboard abhilasg. you can easily check &amp; view your <a href="#">recent orders</a>, manage your <a href="#">shipping and billing addresses</a> and <a href="#">edit your password and account details.</a></p>
                                             </div>
                                         </div>
                                     </div>
@@ -124,19 +124,29 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
                                     <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
                                         <div class="row">
                                             <div class="col-lg-6">
-                                                <div class="card mb-3 mb-lg-0">
-                                                    <div class="card-header">
-                                                        <h5 class="mb-0">Billing Address</h5>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <address>3522 Interstate<br> 75 Business Spur,<br> Sault Ste. <br>Marie, MI 49783</address>
-                                                        <p>New York</p>
-                                                        <a href="#" class="btn-small">Edit</a>
-                                                    </div>
-                                                </div>
+                                                
+                                                {% for i in address %}
+                        <div class="card-deck">
+                            <div class="card">
+                              
+                              <div class="card-body">
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                        value="{{i.id}}" type="radio"
+                                        name="flexRadioDefault" id="flexRadioDefault1" checked >
+                                </div>
+                                <address>{{i.name}}<br>{{i.city}},<br> {{i.state}} <br>{{i.pincode}},<br>{{i.phone}}</address>
+                                <p>{{i.address}}</p>
+                                <a href="#" class="btn-small">Edit</a>
+                              </div>
+                            </div>
+                        </div>
+                        {% endfor %}  
+                                               
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="card">
@@ -152,49 +162,68 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="row">
+                                        </div>
+                                        <div class="mb-25">
+                                            <h4>Billing Details</h4>
+                                        </div>
+                                        <form action="{% url 'add_address' %}" method="post">
+                                            {% csrf_token %}
+                                            <div class="accordion">
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header" id="personalInfo">
+                                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#personalCollapse" aria-expanded="true" aria-controls="personalCollapse">
+                                                            Personal Information
+                                                        </button>
+                                                    </h2>
+                                                    <div id="personalCollapse" class="accordion-collapse collapse show" aria-labelledby="personalInfo" data-bs-parent=".accordion">
+                                                        <div class="accordion-body">
+                                                            <div class="form-group">
+                                                                <input type="text" required="" name="name" placeholder=" Name *">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <input type="text" required="" name="city" placeholder=" City *">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <input type="text" required="" name="state" placeholder=" State *">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <input required="" type="text" name="pincode" placeholder="Pincode *">
+                                                            </div>
+                                                             <div class="form-group">
+                                                                <input required="" type="text" name="phone" placeholder="Phone *">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <input type="text" name="address" required="" placeholder="Address *">
+                                                            </div>
+                                                          
+                                                            
+                                                            <!-- Other personal information fields -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                               
+                                                    
+                                                <!-- Other accordion items for remaining fields -->
+                                            </div>
+                                           
+                                            <!-- Other fields not in accordion -->
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                       </form>
                                     </div>
+
+                                    </div>
+
+
+
                                     <div class="tab-pane fade" id="account-detail" role="tabpanel" aria-labelledby="account-detail-tab">
                                         <div class="card">
                                             <div class="card-header">
                                                 <h5>Account Details</h5>
                                             </div>
                                             <div class="card-body">
-                                                <p>Already have an account? <a href="page-login-register.html">Log in instead!</a></p>
-                                                <form method="post" name="enq">
-                                                    <div class="row">
-                                                        <div class="form-group col-md-6">
-                                                            <label>First Name <span class="required">*</span></label>
-                                                            <input required="" class="form-control square" name="name" type="text">
-                                                        </div>
-                                                        <div class="form-group col-md-6">
-                                                            <label>Last Name <span class="required">*</span></label>
-                                                            <input required="" class="form-control square" name="phone">
-                                                        </div>
-                                                        <div class="form-group col-md-12">
-                                                            <label>Display Name <span class="required">*</span></label>
-                                                            <input required="" class="form-control square" name="dname" type="text">
-                                                        </div>
-                                                        <div class="form-group col-md-12">
-                                                            <label>Email Address <span class="required">*</span></label>
-                                                            <input required="" class="form-control square" name="email" type="email">
-                                                        </div>
-                                                        <div class="form-group col-md-12">
-                                                            <label>Current Password <span class="required">*</span></label>
-                                                            <input required="" class="form-control square" name="password" type="password">
-                                                        </div>
-                                                        <div class="form-group col-md-12">
-                                                            <label>New Password <span class="required">*</span></label>
-                                                            <input required="" class="form-control square" name="npassword" type="password">
-                                                        </div>
-                                                        <div class="form-group col-md-12">
-                                                            <label>Confirm Password <span class="required">*</span></label>
-                                                            <input required="" class="form-control square" name="cpassword" type="password">
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <button type="submit" class="btn btn-fill-out submit" name="submit" value="Submit">Save</button>
-                                                        </div>
-                                                    </div>
-                                                </form>
+                                                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" integrity="sha384-o+4D27B6pq0FbKJv97n3c1ACK/W6EpzQ5SF8hY+4JhAA2LGp2Ag4M4VRVoZ17stwE" crossorigin="anonymous">
+
                                             </div>
                                         </div>
                                     </div>
@@ -206,5 +235,7 @@
             </div>
         </section>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" integrity="sha384-o+4D27B6pq0FbKJv97n3c1ACK/W6EpzQ5SF8hY+4JhAA2LGp2Ag4M4VRVoZ17stwE" crossorigin="anonymous">
 
 {% endblock  %}

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'store',
     'carts',
     'admin_main',
+    'orders',
 ]
 
 MIDDLEWARE = [
@@ -150,5 +151,5 @@ MESSAGE_TAGS = {
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'swathydimith97@gmail.com'
-EMAIL_HOST_PASSWORD = 'swathydimith@1997'
+EMAIL_HOST_PASSWORD = 'oaezejmotvsbhpor'
 EMAIL_USE_TLS = True

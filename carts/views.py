@@ -3,6 +3,10 @@ from store.models import product
 from .models import cart,cartitem
 from django.http import HttpResponse 
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from accounts.models import Address
+from django.http import HttpResponse
+
 # Create your views here.
 def _cart_id(request):
     cart = request.session.session_key
@@ -59,6 +63,7 @@ def remove_cart_item(request,product_id):
 
 def cart_page(request,total=0,quantity=0,cart_items=None):
     try:
+        
         cart_model = cart.objects.get(cart_id = _cart_id(request))
         cart_items = cartitem.objects.filter(cart=cart_model,is_active=True)
         for cart_item in cart_items:
@@ -74,3 +79,38 @@ def cart_page(request,total=0,quantity=0,cart_items=None):
     }
     return render(request,'store/cart.html',context)
 
+
+
+@login_required(login_url='login')
+def checkout(request,total=0,quantity=0,cart_items=None):
+    try:
+        cart_model = cart.objects.get(cart_id = _cart_id(request))
+        cart_items = cartitem.objects.filter(cart=cart_model,is_active=True)
+        user = request.user
+        address = Address.objects.filter(user=user)
+        print(address)
+        for cart_item in cart_items:
+            total += (cart_item.product.prize * cart_item.quantity)
+            quantity += cart_item.quantity
+    except cart.DoesNotExist:
+        pass
+
+    context = {
+        'total': total,
+        'quantity': quantity,
+        'cart_items':cart_items,
+        'address' : address,
+    }
+    return render(request,'store/checkout.html',context)
+
+
+
+
+
+
+
+
+
+
+def order_success(request):
+    return HttpResponse("ordersuccess")

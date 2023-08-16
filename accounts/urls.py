@@ -13,5 +13,7 @@ urlpatterns = [
     path('verify_code/', views.verify_code,name='verify_code'),
     path('phone_verify/', views.phone_verify,name='phone_verify'),
     # path('forgotPassword_otp/', views.forgotPassword_otp,name='forgotPassword_otp'),
-    # path('resetPassword/', views.resetPassword,name='resetPassword'),
+    path('resetPassword/', views.resetPassword,name='resetPassword'),
+    path('add_address/', views.add_address,name='add_address'),
+    path('display_address/', views.display_address,name='display_address'),
 ]

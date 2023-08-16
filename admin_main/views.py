@@ -1,9 +1,10 @@
 from django.shortcuts import render,redirect
 from accounts.models import Accounts
-from store.models import product
+from store.models import product,ProductImage
 from category.models import category
 from django.http import JsonResponse
 from store.forms import Productform
+from category.forms import Categoryform
 
 # Create your views here.
 def home(request):
@@ -40,8 +41,17 @@ def addproduct(request,product_id=0):
         if request.method=='POST':
             form = Productform(request.POST,request.FILES)
             if form.is_valid():
+                product = form.save()
+                if request.FILES.get('pr_images') != 0:
+                    images = request.FILES.getlist('pr_images')
+                    for img in images:
+                        image = ProductImage.objects.create(product=product, image=img)
+                        image.save()
                 form.save()
                 return redirect('productlist')
+            else:
+                print('form not valid')
+                print(form.errors)
         form = Productform()
     else:
         prod = product.objects.get(id=product_id)
@@ -56,6 +66,34 @@ def addproduct(request,product_id=0):
         'form' : form
     }
     return render(request,'admin_temp/addproduct.html',context)
+
+def addcategory(request,category_id=0):
+    if category_id==0:
+        if request.method=='POST':
+            form = Categoryform(request.POST,request.FILES)
+            if form.is_valid():
+                Category = form.save()
+                form.save()
+                return redirect('categorylist')
+            else:
+                print('form is not valid')
+                print(form.errors)
+        form = Categoryform()
+    else:
+        cate = category.objects.get(id=category_id)
+        form = Categoryform(instance=cate)
+        if request.method =='POST':
+            form = Categoryform(request.POST,request.FILES,instance=cate)
+            if form.is_valid:
+                form.save()
+                return redirect('categorylist')
+    
+
+    context ={
+        'form': form
+    }
+    
+    return render(request,'admin_temp/addcategory.html',context)
 
 # user block
 
@@ -96,5 +134,10 @@ def deleteproduct(request,product_id):
     prod = product.objects.get(id=product_id)
     prod.delete()
     return redirect('productlist')
+
+def deletecategory(request,category_id):
+    cate = category.objects.get(id=category_id)
+    cate.delete()
+    return redirect('categorylist')
 
 

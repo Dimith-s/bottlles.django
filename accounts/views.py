@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from .forms import registrationform
-from .models import Accounts
+from .models import Accounts, Address
 from django.contrib import messages,auth
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
@@ -13,6 +13,8 @@ from django.utils.http import urlsafe_base64_decode,urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.http import HttpResponse
+from carts.views import _cart_id
+from carts.models import cart,cartitem
 
 
 # Create your views here.
@@ -66,9 +68,28 @@ def login(request):
         print(email)
         password = request.POST['password']
         print(password)
-        user = auth.authenticate(request,email=email,password= password)
+        user = auth.authenticate(request,email=email,password=password)
+        print(user)
 
         if user is not None:
+            print('hello')
+            try:
+                
+                cart_model = cart.objects.get(cart_id=_cart_id(request))
+                print(cart_model)
+                is_cart_item_exists = cartitem.objects.filter(cart=cart_model).exists()
+                if is_cart_item_exists:
+                    cart_item =cartitem.objects.filter(cart=cart_model)
+                    print('hello')
+                    print(cart_item)
+                    print('hloo')
+                    for item in cart_item:
+                        item.user=user
+                        print(item.user)
+                        item.save()
+            except Exception as e:
+                print("exeption:",str(e))
+            
             if user.is_superadmin:
                 print('he is supersuer')
                 auth.login(request,user)
@@ -104,6 +125,7 @@ def forgotpassword(request):
         email = request.POST['email']
         if Accounts.objects.filter(email=email).exists():
             user =Accounts.objects.get(email__exact=email)
+            
 
             #reset password email
             current_site = get_current_site(request)
@@ -132,8 +154,39 @@ def forgotpassword(request):
             return redirect('forgotpassword')
     return render(request,'accounts/forgotpassword.html')
 
-def resetpassword_validate(request):
-    return HttpResponse('ok')
+def resetpassword_validate(request,uidb64,token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = Accounts._default_manager.get(pk=uid)
+    except (TypeError,ValueError,OverflowError,Accounts.DoesNotExists):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user,token):
+        request.session['uid'] = uid
+        messages.success(request,'please reset your password')
+        return redirect('resetPassword')
+    else:
+        messages.error(request,'this linkmhas been expired')
+        return redirect('login')
+    
+def resetPassword(request):
+    if request.method == 'POST':
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+        if password == confirm_password:
+            uid = request.session.get('uid')
+            user = Accounts.objects.get(pk=uid)
+            user.set_password(password)
+            user.save()
+            messages.success(request,'password reset succesfull')
+            return redirect('login')
+
+        else:
+            messages.error(request,'password do not match')
+            return redirect('resetPasswordone')
+    else:
+
+        return render(request,'accounts/resetPasswordone.html')
  
 
 
@@ -145,7 +198,10 @@ def logout(request):
 
 
 def dashboard(request):
-    return render(request,'accounts/dashboard.html')
+    user= request.user
+    address = Address.objects.filter(user=user)
+    print(address)
+    return render(request,'accounts/dashboard.html',{'address':address})
 
 
 def verify_code(request):
@@ -218,91 +274,36 @@ def phone_verify(request):
 
 
 
-# def forgotPassword(request):
-#     global mobile_number_forgotPassword
-#     if request.method == 'POST':
-#         print("enterd")
-        
-#         # setting this mobile number as global variable so i can access it in another view (to verify)
-#         mobile_number_forgotPassword = request.POST.get('phone_number')
-#         print(mobile_number_forgotPassword)
-        
-#         # checking the null case
-#         if mobile_number_forgotPassword == '':
-#             print("nothappen")
-#             # messages.warning(request, 'You must enter a mobile number')
-#             return redirect('forgotPassword')
-   
-#         # instead we can also do this by savig this mobile number to session and
-#         # access it in verify otp:
-#         # request.session['mobile']= mobile_number
-        
-        
-#         user = Accounts.objects.filter(phone_number = '+91'+  str(mobile_number_forgotPassword))
-#         print(user)
-            
-#         if user:  #if user exists
-#             verify.send('+91' + str(mobile_number_forgotPassword))
-#             return redirect('forgot_Password_otp')
-#         else:
-#             messages.warning(request,'Mobile number doesnt exist')
-#             return redirect('forgot_Password')
-            
-#     return render(request, 'accounts/forgotpassword.html')
+def add_address(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        address = request.POST.get('address')
+        city = request.POST.get('city')
+        state= request.POST.get('state')
+        pincode = request.POST.get('pincode')
+        phone = request.POST.get('phonenumber')
+        # print(request.body)
+        # print(name, city, pincode, phone,address)
+
+        address = Address.objects.create(
+            user=request.user,
+            name=name,
+            city=city,
+            state=state,
+            pincode=pincode,
+            phone=phone,
+            address=address,
+        )
+        address.save()
+        return redirect('dashboard')  
+    return render(request, 'accounts/dashboard.html')
 
 
-
-
-# def forgotPassword_otp(request):
-#     print("request otp1")
-#     global mobile_number_forgotPassword
-#     mobile_number = mobile_number_forgotPassword
-#     print(mobile_number)
+def display_address(request):
+    addresses = Address.objects
     
-#     if request.method == 'POST':
-#         print("request otp")
-#         # form = VerifyForm(request.POST)
-#         # if form.is_valid():
-#         otp  = request.POST['otp']
-#         if verify.check('+91'+ str(mobile_number), otp):
-#             user = Accounts.objects.get(phone_number='+91'+  str(mobile_number))
-#             if user:
-#                 return redirect('resetPassword')
-#         else:
-#             # messages.warning(request,'Invalid OTP')
-#             return redirect('forgot_Password_otp')
-#     else:
-#         form = VerifyForm()
-
-        
-#     return render(request, 'accounts/verify.html', {'form': form})
+    return render(request,'accounts/add-address.html')
 
 
 
-
-
-# def resetPassword(request):
-#     mobile_number = mobile_number_forgotPassword
-    
-#     if request.method == 'POST':
-#         password1 = request.POST.get('password')
-#         password2 = request.POST.get('confirm_password')
-#         print(str(password1)+' '+str(password2)) #checking
-        
-#         if password1 == password2:
-#             user = Accounts.objects.get(phone_number='+91'+ str(mobile_number))
-#             print(user)
-#             print('old password  : ' +str(user.password))
-            
-#             user.set_password(password1)
-#             user.save()
-
-#             print('new password  : ' +str(user.password))
-#             # messages.success(request, 'Password changed successfully')
-#             return redirect('user_login')
-#         else:
-#             # messages.warning(request, 'Passwords doesnot match, Please try again')
-#             return redirect('resetPassword')
-    
-#     return render(request, 'accounts/resetpassword.html')
 

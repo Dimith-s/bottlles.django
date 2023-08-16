@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block content %}
+<a href="{% url 'addcategory'%}" class="btn btn-xs" style = "background: grey"> ADD CATEGORY</a>
 <div class="card mb-4">
                 
                 <div class="card-body">
@@ -28,7 +29,7 @@
                                         <td class="align-middle text-center">
                                             <img src="{{category.cat_image.url}}" class="img-sm img-thumbnail" alt="Item">
                                         </td>
-                                        <td class="align-middle text-center">{{category.discription}}</td>
+                                        <td class="align-middle text-center" style="max-width: 260px; white-space: normal; word-wrap: overflow: hidden; text-overflow: ellipsis;">{{category.discription}}</td>
                                         {% comment %} <td class="align-middle text-center">
                                             {{user.phone_number}}
                                         </td> {% endcomment %}
@@ -41,6 +42,9 @@
                                             {% else %}
                                                 <a href="#" class="btn btn-xs categorybutton" data-category-id={{category.id}}> Unavailable</a>
                                             {% endif %}
+                                            <a href="{% url 'editcategory' category.id  %}" class="btn btn-xs" style = "background: blue"> edit</a>
+                                            <a href="{% url 'deletecategory' category.id  %}" class="btn btn-xs" style = "background: black"> Delete</a>
+                                            
                                             
                                         </td>
                                     </tr>

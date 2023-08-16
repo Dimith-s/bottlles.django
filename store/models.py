@@ -27,3 +27,8 @@ class product(models.Model):
         # Generate the slug from the product name
         self.slug = slugify(self.product_name)
         super(product, self).save(*args, **kwargs)
+
+
+class ProductImage(models.Model):
+    product         = models.ForeignKey(product, on_delete=models.CASCADE)
+    image           = models.ImageField(upload_to='photos/products',blank=True)
