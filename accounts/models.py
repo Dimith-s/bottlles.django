@@ -74,12 +74,13 @@ User = get_user_model()
 
 class Address(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE, null=True) 
-    name = models.CharField(max_length=100,null=True)
-    address = models.CharField(max_length=100,null=True)
+    name = models.CharField(max_length=100,default='')
+    last_name = models.CharField(max_length=100,default='')
+    address = models.CharField(max_length=100,default='')
     city = models.CharField(max_length=50) 
-    state = models.CharField(max_length=50,default='') 
-    pincode = models.IntegerField(blank=True)
-    phone = models.CharField(max_length=15,null=True)
+    state = models.CharField(max_length=50) 
+    pincode = models.IntegerField()
+    phone = models.CharField(max_length=15,default='')
 
 
     def _str_(self):

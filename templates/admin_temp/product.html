@@ -17,6 +17,7 @@
                                         <th class="align-middle text-center" scope="col">product name</th>
                                         <th class="align-middle text-center" scope="col">prize</th>
                                         <th class="align-middle text-center" scope="col">category</th>
+                                        <th class="align-middle text-center" scope="col">size</th>
                                         <th class="align-middle text-center" scope="col">images</th>
                                         <th class="align-middle text-center" scope="col">is active</th>
                                         <th class="align-middle text-center" scope="col">Action</th>
@@ -32,9 +33,11 @@
                                         <td class="align-middle text-center">
                                             {{product.category}}
                                         </td>
+                                        <td class="align-middle text-center">{{product.size}}</td>
                                         <td class="align-middle text-center">
                                             <img src="{{product.images.url}}" class="img-sm img-thumbnail" alt="Item">
                                         </td>
+                                        
                                         <td class="align-middle text-center">{{product.is_available}}</td>
                                         <td class="align-middle text-center">
                                             {% comment %} <a href="#" class="btn btn-xs"> View details</a> {% endcomment %}

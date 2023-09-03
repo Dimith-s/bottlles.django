@@ -1,9 +1,9 @@
 from django.shortcuts import render,redirect
 from accounts.models import Accounts
-from store.models import product,ProductImage
+from store.models import product,ProductImage,Size
 from category.models import category
 from django.http import JsonResponse
-from store.forms import Productform
+from store.forms import Productform,SizeForm
 from category.forms import Categoryform
 
 # Create your views here.
@@ -28,6 +28,26 @@ def productlist(request):
     }
     return render(request,'admin_temp/product.html',context)
 
+def sizelist(request):
+    size_list = Size.objects.all()
+    print('sizelist : ', size_list)
+    context = {
+        'size_list':size_list,
+    }
+    return render(request,'admin_temp/size.html',context)
+
+def addsize(request):
+    form = SizeForm
+    if request.method == 'POST':
+        form = SizeForm(request.POST)
+        if form.is_valid:
+            form.save()
+            return redirect('sizelist')
+    context = {
+        'form':form,
+    }
+    return render(request,'admin_temp/addsize.html',context)
+
 
 def categorylist(request):
     category_list = category.objects.all().order_by('-id')
@@ -41,11 +61,11 @@ def addproduct(request,product_id=0):
         if request.method=='POST':
             form = Productform(request.POST,request.FILES)
             if form.is_valid():
-                product = form.save()
+                productt = form.save()
                 if request.FILES.get('pr_images') != 0:
                     images = request.FILES.getlist('pr_images')
                     for img in images:
-                        image = ProductImage.objects.create(product=product, image=img)
+                        image = ProductImage.objects.create(product=productt, image=img)
                         image.save()
                 form.save()
                 return redirect('productlist')
@@ -54,6 +74,7 @@ def addproduct(request,product_id=0):
                 print(form.errors)
         form = Productform()
     else:
+        print('product id : ',product_id)
         prod = product.objects.get(id=product_id)
         form = Productform(instance=prod)
         if request.method == 'POST':

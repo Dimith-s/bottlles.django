@@ -15,5 +15,5 @@ urlpatterns = [
     # path('forgotPassword_otp/', views.forgotPassword_otp,name='forgotPassword_otp'),
     path('resetPassword/', views.resetPassword,name='resetPassword'),
     path('add_address/', views.add_address,name='add_address'),
-    path('display_address/', views.display_address,name='display_address'),
+    
 ]

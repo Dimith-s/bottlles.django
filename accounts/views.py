@@ -275,19 +275,22 @@ def phone_verify(request):
 
 
 def add_address(request):
+    print(request.POST)
     if request.method == 'POST':
         name = request.POST.get('name')
+        last_name = request.POST['last_name']
         address = request.POST.get('address')
         city = request.POST.get('city')
         state= request.POST.get('state')
         pincode = request.POST.get('pincode')
-        phone = request.POST.get('phonenumber')
+        phone = request.POST.get('phone')
         # print(request.body)
         # print(name, city, pincode, phone,address)
 
         address = Address.objects.create(
             user=request.user,
             name=name,
+            last_name=last_name,
             city=city,
             state=state,
             pincode=pincode,
@@ -295,14 +298,11 @@ def add_address(request):
             address=address,
         )
         address.save()
-        return redirect('dashboard')  
+        return redirect('checkout')  
     return render(request, 'accounts/dashboard.html')
 
 
-def display_address(request):
-    addresses = Address.objects
-    
-    return render(request,'accounts/add-address.html')
+
 
 
 

@@ -1,0 +1,39 @@
+{% extends "admin_temp/base.html" %}
+
+
+{% load static %}
+
+{% block content %}
+<a href="{% url 'addsize'%}" class="btn btn-xs" style = "background: grey">Add new Size</a>
+<div class="card mb-4">
+                
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <div class="table-responsive" id = 'producttable'>
+                            <table class="table align-middle table-nowrap mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        
+                                        <th class="align-middle text-center" scope="col">Sl.no</th>
+                                        <th class="align-middle text-center" scope="col">Size (ml)</th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for size in size_list  %}
+                                
+                                
+                                    <tr>
+                                        <td class="align-middle text-center">{{forloop.counter}}</a> </td>
+                                        <td class="align-middle text-center">{{size.size}}</td>
+                                        
+                                    </tr>
+                                {% endfor %}
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- table-responsive end// -->
+                </div>
+            </div>
+{% endblock content %}

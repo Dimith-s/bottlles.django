@@ -5,7 +5,7 @@
 <section class="mt-50 mb-50">
 
     <div class="container">
-        <form action="{% url 'payment_method' %}" method ="post">
+        <form action="{% url 'place_order' %}" method ="post">
             {% csrf_token %}
         <div class="row">
             <div class="col-md-6">
@@ -130,14 +130,14 @@
                         <div class="payment_option">
                             <div class="custome-radio">
                                 <input class="form-check-input" required="" type="radio" name="payment_option"
-                                    id="exampleRadios5" checked value='wallet'>
+                                    id="exampleRadios5" checked="" value='wallet'>
                                 <label class="form-check-label" for="exampleRadios5" data-bs-toggle="collapse"
                                     data-target="#wallet" aria-controls="wallet">wallet</label>
                                 
                             </div>
                             <div class="custome-radio">
                                 <input class="form-check-input" required="" type="radio" name="payment_option"
-                                    id="exampleRadios4" checked  value='cod'>
+                                    id="exampleRadios4" checked="" value='cod'>
                                 <label class="form-check-label" for="exampleRadios4" data-bs-toggle="collapse"
                                     data-target="#checkPayment" aria-controls="checkPayment">COD</label>
                                 {% comment %} <div class="form-group collapse in" id="checkPayment">
@@ -147,10 +147,10 @@
                             </div>
                             <div class="custome-radio">
                                 <input class="form-check-input" required="" type="radio" name="payment_option"
-                                    id="exampleRadios5" value='razorpay' checked>
+                                    id="exampleRadios5" checked="" value='raze'>
                                 <label class="form-check-label" for="exampleRadios5" data-bs-toggle="collapse"
                                     data-target="#paypal" aria-controls="paypal">Razorpay</label>
-                                <div class="form-group collapse in" >
+                                <div class="form-group collapse in" id="paypal">
                                     <p class="text-muted mt-5">Pay via PayPal; you can pay with your credit card if you
                                         don't have a PayPal account.</p>
                                 </div>
@@ -159,7 +159,7 @@
                     </div>
 
                     {% comment %} <a href="{% url 'place_order' %}"> {% endcomment %}
-                        <button type='submit'  class="btn btn-fill-out btn-block mt-30" id="placeOrderButton"> Place
+                        <button type='submit'  class="btn btn-fill-out btn-block mt-30"> Place
                             Order</button>
                         {% comment %} </a> {% endcomment %}
     
@@ -224,51 +224,10 @@
 </div>
 
 </section>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-var options = {
-    "key": "rzp_test_FIpBfmKrOfy5vT", // Enter the Key ID generated from the Dashboard
-    
-    "amount": "500000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-    "currency": "INR",
-    "name": "Acme Corp",
-    "description": "Test Transaction",
-    "image": "https://example.com/your_logo",
-    "order_id": "order_IluGWxBm9U8zJ8", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-    "handler": function (response){
-        alert(response.razorpay_payment_id);
-        alert(response.razorpay_order_id);
-        alert(response.razorpay_signature)
-    },
-    "prefill": {
-        "name": "Gaurav Kumar",
-        "email": "gaurav.kumar@example.com",
-        "contact": "9000090000"
-    },
-    "notes": {
-        "address": "Razorpay Corporate Office"
-    },
-    "theme": {
-        "color": "#3399cc"
-    }
-};
-var rzp1 = new Razorpay(options);
-console.log(options)
-rzp1.on('payment.failed', function (response){
-        alert(response.error.code);
-        alert(response.error.description);
-        alert(response.error.source);
-        alert(response.error.step);
-        alert(response.error.reason);
-        alert(response.error.metadata.order_id);
-        alert(response.error.metadata.payment_id);
-});
-document.getElementById('razorpayButton').onclick = function(e){
-    rzp1.open();
-    e.preventDefault();
-}
-</script>
+
+
+
 {% endblock %}
-
-
-
+{% block scripts %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+{% endblock scripts %}

@@ -153,3 +153,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'swathydimith97@gmail.com'
 EMAIL_HOST_PASSWORD = 'oaezejmotvsbhpor'
 EMAIL_USE_TLS = True
+
+
+KEY = 'rzp_test_FIpBfmKrOfy5vT'
+SECRET = 'PYia9QShe27Cspvm27NYdU21'
