@@ -236,9 +236,12 @@
                                         </div>
                                         <div class="clearfix product-price-cover">
                                             <div class="product-price primary-color float-left">
-                                                <ins><span class="text-brand">${{single_product.prize}}</span></ins>
-                                                <ins><span class="old-price font-md ml-15">$200.00</span></ins>
-                                                <span class="save-price  font-md color3 ml-15">25% Off</span>
+                                                <ins><span class="text-brand">${{single_product.original_price}}</span></ins>
+                                                {% if single_product.offer_price != 0 %}
+                                                <ins><span class="old-price font-md ml-15">${{single_product.prize}}</span></ins>
+                                                
+                                                <span class="save-price  font-md color3 ml-15">${{single_product.offer_price}} Off</span>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         <div class="bt-1 border-color-1 mt-15 mb-15"></div>
@@ -265,12 +268,12 @@
                                             </ul>
                                         </div> {% endcomment %}
                                         <div class="attr-detail attr-size">
-                                            <strong class="mr-10">Quantity</strong>
+                                            <strong class="mr-10">Quantity</strong> 
                                             <ul class="list-filter size-filter font-small">
-                                                <li><a href="#">350ml</a></li>
-                                                <li class="active"><a href="#">500ml</a></li>
-                                                <li><a href="#">750ml</a></li>
-                                                <li><a href="#">1 litre</a></li>
+                                                {% for i in sizes  %}
+                                                <li><a href="#">{{i}}</a></li>
+                                                {% endfor %}
+                                                
                                                 {% comment %} <li><a href="#">XXL</a></li> {% endcomment %}
                                             </ul>
                                         </div>

@@ -12,7 +12,7 @@
         <nav>
             <ul class="menu-aside">
                 <li class="menu-item active">
-                    <a class="menu-link" href="index.html"> <i class="icon material-icons md-home"></i>
+                    <a class="menu-link" href="{% url 'ahome' %}"> <i class="icon material-icons md-home"></i>
                         <span class="text">Dashboard</span>
                     </a>
                 </li>
@@ -43,8 +43,8 @@
                         <span class="text">Orders</span>
                     </a>
                     <div class="submenu">
-                        <a href="page-orders-1.html">Order list 1</a>
-                        <a href="page-orders-2.html">Order list 2</a>
+                        <a href="{% url 'orderlist' %}">Order list </a>
+                        <a href="{% url "coupon_management" %}">coupon_management</a>
                         <a href="page-orders-detail.html">Order detail</a>
                     </div>
                 </li>

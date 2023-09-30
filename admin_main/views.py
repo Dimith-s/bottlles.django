@@ -1,16 +1,87 @@
 from django.shortcuts import render,redirect
 from accounts.models import Accounts
-from store.models import product,ProductImage,Size
+from store.models import product,ProductImage,Size,coupon
 from category.models import category
 from django.http import JsonResponse
-from store.forms import Productform,SizeForm
+from store.forms import Productform,SizeForm,CouponForm
 from category.forms import Categoryform
+from orders.models import *
+from django.db.models import Count,Sum,Q
+from django.utils import timezone
+from datetime import datetime,timedelta,date
+import datetime
+from decimal import Decimal
 
 # Create your views here.
 def home(request):
-    return render(request,'admin_temp/adminhome.html')
+
+    if request.user.is_superadmin:
+        user_count = Accounts.objects.filter(is_superadmin=False).count()
+        delivered_products = Order.objects.all().filter(status='Delivered')
+        print("delivered_products :",delivered_products)
+        revenue = delivered_products.aggregate(Sum('order_total'))['order_total__sum'] or 0
+        total_orders = OrderProduct.objects.all().count()
+        status_counts = OrderProduct.objects.values('status').annotate(count=Count('status'))
+        product_count = product.objects.all().count()
+        category_count = category.objects.all().count()
+        current_year = timezone.now().year
+        order_detail = Order.objects
+        monthly_order_count = []
+        month = timezone.now().month
+        order_detail = Order.objects.filter(
+            created_at__lt=date(current_year, 12, 31),
+            status='Delivered',
+        )
+
+        for i in range(1, month + 1):
+            monthly_order = order_detail.filter(created_at__month=i).count()
+            monthly_order_count.append(monthly_order)
 
 
+        today = datetime.datetime.now()
+        neworders = Order.objects.filter(created_at__month=today.month).values('created_at__date').annotate(orderitemscount=Count('id', filter=Q(status='Order Placed')))
+        cancelledorders = Order.objects.filter(created_at__month=today.month).values('created_at__date').annotate(cancelleditemscount=Count('id',filter=Q(status='Cancelled')))
+        returnorders = Order.objects.filter(created_at__month=today.month).values('created_at__date').annotate(returnedorderscount=Count('id', filter=Q(status='accepted')))
+        deliveredorders = Order.objects.filter(created_at__month=today.month).values('created_at__date').annotate(delivereditemscount=Count('id', filter=Q(status='Delivered')))
+
+        orderitems = Order.objects.filter(status='Delivered')
+        print("orderitems:",orderitems)
+        last_date = datetime.datetime.now().date()
+        first_date = last_date - timedelta(days=6)
+        amount_per_day = []
+        date_list = []
+        for i in range(1,8):
+            total_amount_per_day = 0
+            for order in orderitems:
+                if order.created_at.date() == first_date:
+                    total_amount_per_day += order.order_total
+            amount_per_day.append(total_amount_per_day)
+            date_list.append(first_date)
+            first_date = first_date + timedelta(days=1)
+    
+  
+        context = {
+            'revenue':revenue,
+            'total_orders':total_orders,
+            'status_counts':status_counts,
+            'product_count':product_count,
+            'category_count':category_count,
+            'user_count':user_count,
+            'amount_per_day':amount_per_day,
+            'date_list':date_list,
+            'neworders':neworders,
+            'cancelledorders':cancelledorders,
+            'returnorders':returnorders,
+            'deliveredorders':deliveredorders,
+            'monthly_order_count':monthly_order_count,
+
+        }
+        return render(request,'admin_temp/adminhome.html', context)
+    return redirect('ahome')
+
+
+def admin_logout(request):
+    return redirect('login')
 
 def userlist(request):
     user_list = Accounts.objects.all().order_by('id')
@@ -161,4 +232,156 @@ def deletecategory(request,category_id):
     cate.delete()
     return redirect('categorylist')
 
+def orderlist(request):
+    order_list = Order.objects.all().order_by('-id')
+    context = {
+        'order_list' : order_list
+    }
+    return render(request,'admin_temp/order.html',context)
 
+def order_details(request,id):
+   
+    main_order = Order.objects.get(pk=id)
+    print('honey',main_order)
+    orders = OrderProduct.objects.filter(order = main_order).order_by('-id')
+    for order in orders:
+        print(order.id)
+
+    return render(request,'admin_temp/order_detail.html',{"orders": orders,"id":id,"main_order":main_order})
+
+
+
+def edit_order(request, id):
+    if request.method == "POST":
+        status = request.POST.get("status")
+        try:
+        
+            order = Order.objects.get(pk=id)
+            order.status = status
+            order.save()
+            if status == 'Delivered':
+                pyment=order.payment
+                pyment.status='Success'
+                pyment.save()
+            if status == 'accepted':
+                user=order.user
+                print(user)
+                wallet, _ =Wallet.objects.get_or_create(user=user)
+                refund_amount= Decimal(str(order.order_total))
+                print(refund_amount)
+                wallet.balance += refund_amount
+                wallet.save()
+
+
+        except Order.DoesNotExist:
+            pass
+    return redirect("orderlist")
+
+def coupon_management(request):
+    coup = coupon.objects.all()
+    context={
+        'coup': coup
+    } 
+    return render(request,'admin_temp/coupon.html',context)
+
+def addcoupon(request):
+    form = CouponForm
+    if request.method == 'POST':
+        form = CouponForm(request.POST)
+        if form.is_valid:
+            form.save()
+            return redirect('coupon_management')
+    context = {
+        'form':form,
+    }
+    return render(request,'admin_temp/addcoupon.html',context)
+
+    
+def sales_report(request):
+    orders = OrderProduct.objects.all()
+    print("orders :",orders)
+    msg = 'nothing'
+    if request.method == 'POST':
+        start_date = request.POST.get('startDate')
+        end_date = request.POST.get('endDate')
+        if start_date == end_date:
+            orders = OrderProduct.objects.all().filter(order__created_at__date=start_date)
+            msg = 'Showing the results of the date : '+ start_date
+            
+        else:
+            orders = OrderProduct.objects.all().filter(order__created_at__range=[start_date,end_date])
+            msg = 'Showing the results between '+ start_date + '--' + end_date
+
+    context = {
+        'orders':orders,
+        'msg':msg,
+    }
+    return render(request, 'admin_temp/sales_report.html', context)
+
+def yearly_sales(request):
+    if request.method == 'POST':
+        print('request.post ',request.POST)
+        year = request.POST.get('selectedYear')
+        print('year : ',year)
+        orders = Order.objects.all().filter(created_at__year=year)
+        if orders.count() == 0:
+            msg = 'No result found for ' + year
+        else:
+            msg = 'The details of sales in ' + year + ' are :'
+        context = {
+            'msg':msg,
+            'orders':orders,
+        }
+    return render(request, 'admin_temp/sales_report.html', context)
+
+def monthly_sales(request):
+    print('request.post : ', request.POST)
+    month = request.POST.get('month')
+    orders = Order.objects.all().filter(created_at__month=month)
+    if orders.count() == 0:
+        msg = 'No result found for this month'
+    else:
+        msg = 'The details of the sales in this month are : '
+    context = {
+        'msg':msg,
+        'orders':orders,
+    }
+    return render(request, 'admin_temp/sales_report.html', context)
+
+def accept_return_request(request, id):
+    try:
+        order = Order.objects.get(pk=id)
+        if order.status == 'accepted':
+            
+            
+            # Calculate the refund amount (adjust this calculation according to your requirements)
+            refund_amount = 0.5 * order.order_total  # Example: refunding 50% of the order total
+
+            # Get the user associated with the order
+            user = order.user
+
+            # Get or create the user's wallet
+            wallet, created = Wallet.objects.get_or_create(user=user)
+
+            # Add the refund amount to the user's wallet balance
+            wallet.balance += refund_amount
+            wallet.save()
+
+            # Create a transaction record to track the refund
+            transaction = Transaction.objects.create(
+                user=user,
+                amount=refund_amount,
+                description='Refund for Order #{}'.format(order.order_number)
+            )
+
+            # Update the order status to reflect that the return request has been accepted
+            order.status = 'accepted'
+            order.save()
+
+            return redirect('admin_dashboard')  # Redirect to the admin dashboard or a success page
+        else:
+            # Handle the case where the order status is not 'Return Requested'
+            return redirect('admin_dashboard')
+    except Order.DoesNotExist:
+        # Handle the case where the order doesn't exist
+        return redirect('admin_error_page')

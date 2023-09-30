@@ -1,0 +1,106 @@
+{% extends "admin_temp/base.html" %}
+
+{% load static %}
+
+ {% block content  %}
+ <section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Order List </h2>
+           
+        </div>
+        {% comment %} <div>
+            <input type="text" placeholder="Search order ID" class="form-control bg-white">
+        </div> {% endcomment %}
+    </div>
+    <div class="card mb-4">
+        
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#ID</th>
+                            <th scope="col">Name</th>
+                            {% comment %} <th scope="col">Email</th> {% endcomment %}
+                            <th scope="col">Total</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Date</th>
+                            <th scope="col" class="text-end"> Action </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in order_list  %}
+                        <tr>
+                            <td>{{order.order_number}}</td>
+                            <td><b>{{order.first_name}}</b></td>
+                            {% comment %} <td><template class="__cf_email__" data-cfemail="aec3cfdcd8c7c0eecbd6cfc3dec2cb80cdc1c3">[email&#160;protected]</template></td> {% endcomment %}
+                            <td>{{order.order_total}}</td>
+                            <td><span class="badge rounded-pill alert-warning">{{order.status}}</span></td>
+                            <td>{{order.created_at}}</td>
+                            <td class="text-end"> 
+                                <div class="dropdown">
+                                    
+                                    <form method="POST" action="{% url 'edit_order' order.id %}">
+                                        {% csrf_token %}
+                                        {% if order.status == 'Return requested' %}
+                                        <select name="status">
+                                            <option value="New" class="dropdown-item" {% if i.status == 'New' %}selected{% endif %}>New</option>
+                                            <option value="accepted" {% if i.status == 'Pending' %}selected{% endif %}>accepted</option>
+                                            <option value="declined" {% if i.status == 'Pending' %}selected{% endif %}>declined</option>
+                                            <td><button class="btn btn-md rounded font-sm" type="submit">Change</button></td>
+                                        </select>
+                                        {% elif order.status|lower == 'accepted' %}
+                                        <td><button class="btn btn-md rounded font-sm" type="submit" disabled>Change</button></td>
+                                        {% else %}
+                                        <select name="status">
+                                            <option value="New" class="dropdown-item" {% if i.status == 'New' %}selected{% endif %}>New</option>
+                                            <option value="Pending" {% if i.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                            <option value="Confirmed" {% if i.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                            <option value="out for shipping" {% if i.status == 'out for shipping' %}selected{% endif %}>out for shipping'</option>
+                                            <option value="Delivered" {% if i.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                            <option value="Cancelled" {% if i.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                      
+                                        </select>
+                                        <td><button class="btn btn-md rounded font-sm" type="submit">Change</button></td>
+                                        {% endif %}
+                                    </form>
+                            </td>
+                            <td class="text-end">
+                                
+                                <a href="{% url 'order_details' order.id %}" class="btn btn-md rounded font-sm">Detail</a>
+                                
+                                {% comment %} <p>No order ID available</p> {% endcomment %}
+                             
+                                <div class="dropdown">
+                                    <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="#">View detail</a>
+                                        <a class="dropdown-item" href="#">Edit info</a>
+                                        <a class="dropdown-item text-danger" href="#">Delete</a>
+                                    </div>
+                                </div> <!-- dropdown //end -->
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                </table>
+            </div> <!-- table-responsive //end -->
+        </div> <!-- card-body end// -->
+    </div> <!-- card end// -->
+    {% comment %} <div class="pagination-area mt-15 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                <li class="page-item"><a class="page-link" href="#">02</a></li>
+                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">16</a></li>
+                <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+            </ul>
+        </nav>
+    </div> {% endcomment %}
+</section> 
+
+ {% endblock %}

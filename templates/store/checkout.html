@@ -6,6 +6,7 @@
 
     <div class="container">
         <form action="{% url 'payment_method' %}" method ="post">
+            <input value = {{discount_price}} name= 'discount_price' type='hidden'>
             {% csrf_token %}
         <div class="row">
             <div class="col-md-6">
@@ -81,7 +82,7 @@
                                         <h5><a href="{{cart_item.product.get_url}}">{{ cart_item.product.product_name}}</a></h5> <span class="product-qty"></span>
                                     </td>
                                     <td> {{ cart_item.quantity }}</td>
-                                    <td>{{cart_item.product.prize}}</td>
+                                    <td>{{cart_item.product.original_price}}</td>
                                 </tr>
 
                                 {% endfor %}
@@ -115,9 +116,20 @@
                                     <td colspan="2"><em>Free Shipping</em></td>
                                 </tr>
                                 <tr>
+                                    <th>discount price</th>
+                                    <td colspan="2"><em>{{discount_price}}</em></td>
+                                </tr>
+                                {% if discount_price > 0 %}
+                                <tr>
+                                    <th>Total</th>
+                                    <td colspan="2" class="product-subtotal"><span class="font-xl text-brand fw-900">{{grand_total }}</span></td>
+                                </tr>
+                                {% else %}
+                                <tr>
                                     <th>Total</th>
                                     <td colspan="2" class="product-subtotal"><span class="font-xl text-brand fw-900">{{total }}</span></td>
                                 </tr>
+                                {% endif %}
 
                             </tbody>
                         </table>
@@ -224,50 +236,30 @@
 </div>
 
 </section>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-var options = {
-    "key": "rzp_test_FIpBfmKrOfy5vT", // Enter the Key ID generated from the Dashboard
-    
-    "amount": "500000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-    "currency": "INR",
-    "name": "Acme Corp",
-    "description": "Test Transaction",
-    "image": "https://example.com/your_logo",
-    "order_id": "order_IluGWxBm9U8zJ8", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-    "handler": function (response){
-        alert(response.razorpay_payment_id);
-        alert(response.razorpay_order_id);
-        alert(response.razorpay_signature)
-    },
-    "prefill": {
-        "name": "Gaurav Kumar",
-        "email": "gaurav.kumar@example.com",
-        "contact": "9000090000"
-    },
-    "notes": {
-        "address": "Razorpay Corporate Office"
-    },
-    "theme": {
-        "color": "#3399cc"
-    }
-};
-var rzp1 = new Razorpay(options);
-console.log(options)
-rzp1.on('payment.failed', function (response){
-        alert(response.error.code);
-        alert(response.error.description);
-        alert(response.error.source);
-        alert(response.error.step);
-        alert(response.error.reason);
-        alert(response.error.metadata.order_id);
-        alert(response.error.metadata.payment_id);
-});
-document.getElementById('razorpayButton').onclick = function(e){
-    rzp1.open();
-    e.preventDefault();
-}
-</script>
+    {% comment %} console.log(" clicked");
+    document.addEventListener("DOMContentLoaded", function () {
+        const placeOrderButton = document.getElementById("placeOrderButton");
+        const walletRadio = document.getElementById("exampleRadios5");
+
+        placeOrderButton.addEventListener("click", function (event) {
+            console.log("Place Order button clicked");
+            // Check if Razorpay is selected before submitting the form
+            if (walletRadio.checked) {
+                
+                // Prevent the form submission
+                event.preventDefault();
+                console.log("login")
+
+                // Redirect to the desired page when Razorpay is selected
+                window.location.href = "{% url 'login' %}";
+            }
+        });
+    });
+</script> {% endcomment %}
+
+
+
 {% endblock %}
 
 

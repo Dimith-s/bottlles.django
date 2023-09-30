@@ -18,6 +18,7 @@ class product(models.Model):
     description  = models.TextField(max_length=500,blank=True)
     size         = models.ForeignKey(Size,on_delete=models.CASCADE) 
     prize        = models.IntegerField()
+    offer_price = models.IntegerField(default=0) 
     images       = models.ImageField(upload_to='photos/product')
     stock        = models.IntegerField()
     is_available = models.BooleanField(default=True)
@@ -31,6 +32,9 @@ class product(models.Model):
 
     def __str__(self) -> str:
         return self.product_name
+
+    def original_price(self):
+        return self.prize - self.offer_price
     
     def save(self, *args, **kwargs):
         # Generate the slug from the product name
@@ -41,6 +45,15 @@ class product(models.Model):
 class ProductImage(models.Model):
     product         = models.ForeignKey(product, on_delete=models.CASCADE)
     image           = models.ImageField(upload_to='photos/products',blank=True)
+
+class coupon(models.Model):
+    coupon_code = models.CharField(max_length=50)
+    is_expired = models.BooleanField(default=False)
+    discount_price = models.IntegerField(default=100)
+    minimum_amount = models.IntegerField(default=500)
+
+    
+
 
 
 

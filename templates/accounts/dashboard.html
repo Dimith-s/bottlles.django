@@ -47,10 +47,25 @@
                                     <div class="tab-pane fade active show" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
                                         <div class="card">
                                             <div class="card-header">
-                                                <h5 class="mb-0">{{user.last_name}} </h5>
+                                                <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" width='50' height='50' style='border-radius:50%' class="avatar">
+                                                <h5 class="mb-0">{{user.first_name}} </h5>
+                                                {% for i in wallet %}
+                                                <h4>wallet amount : {{i.balance}}</h4>
+                                                {% endfor %}
                                             </div>
                                             <div class="card-body">
-                                                <p>From your account dashboard abhilasg. you can easily check &amp; view your <a href="#">recent orders</a>, manage your <a href="#">shipping and billing addresses</a> and <a href="#">edit your password and account details.</a></p>
+                                                <p>{{user.username}}</p>
+                                                <p>{{user.first_name}} {{user.last_name}}</p>
+                                                <p>{{user.email}}</p>
+                                                <p>{{user.phone_number}}</p>
+                                                
+
+                                                
+                                                
+                                                <br><a href="{% url "edit_profile" user.id %}" class="btn-small">Edit</a>
+
+                                                <h4>Total orders<h4>
+                                                <p style="text-align: left;"> {{orders_count}}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -60,9 +75,11 @@
                                                 <h5 class="mb-0">Your Orders</h5>
                                             </div>
                                             <div class="card-body">
-                                                {% comment %} <div class="table-responsive">
+                                                 <div class="table-responsive">
+                                                   
                                                     <table class="table">
                                                         <thead>
+                                                           
                                                             <tr>
                                                                 <th>Order</th>
                                                                 <th>Date</th>
@@ -70,16 +87,39 @@
                                                                 <th>Total</th>
                                                                 <th>Actions</th>
                                                             </tr>
+
                                                         </thead>
                                                         <tbody>
+                                                            {% for order in orders %}
                                                             <tr>
-                                                                <td>#1357</td>
-                                                                <td>March 45, 2020</td>
-                                                                <td>Processing</td>
-                                                                <td>$125.00 for 2 item</td>
-                                                                <td><a href="#" class="btn-small d-block">View</a></td>
+                                                                <td>{{order.order_number}}</td>
+                                                                <td>{{order.created_at}}</td>
+                                                                <td>{{order.status}}</td>
+                                                                <td>{{order.order_total}}</td>
+                                                                <td><a href="{% url 'order_complete' order.id%}" class="btn-small d-block">View</a></td>
+                                                                {% if order.status == 'Delivered' %}
+                                                                <td>
+                                                                    <form method="post" action="{% url 'return_request' order.id %}">
+                                                                        {% csrf_token %}
+                                                                        <button type="submit" class="btn btn-primary">Return </button>
+                                                                    </form>
+                                                                </td>
+                                                            {% elif order.status != 'Cancelled' %}
+                                                                <td>
+                                                                    <form method="post" action="{% url 'cancel_order' order.id %}">
+                                                                        {% csrf_token %}
+                                                                        <button type="submit" class="btn btn-primary">Cancel</button>
+                                                                    </form>
+                                                                </td>
+                                                            {% else %}
+                                                                <td>
+                                                                    <button type="button" class="btn btn-secondary" disabled>Cancelled</button>
+                                                                </td>
+                                                            {% endif %}
+                        </tr>
                                                             </tr>
-                                                            <tr>
+                                                            {% endfor %}
+                                                            {% comment %} <tr>
                                                                 <td>#2468</td>
                                                                 <td>June 29, 2020</td>
                                                                 <td>Completed</td>
@@ -92,10 +132,10 @@
                                                                 <td>Completed</td>
                                                                 <td>$280.00 for 3 item</td>
                                                                 <td><a href="#" class="btn-small d-block">View</a></td>
-                                                            </tr>
+                                                            </tr> {% endcomment %}
                                                         </tbody>
                                                     </table>
-                                                </div> {% endcomment %}
+                                                </div> 
                                             </div>
                                         </div>
                                     </div>
@@ -141,7 +181,7 @@
                                 </div>
                                 <address>{{i.name}}<br>{{i.city}},<br> {{i.state}} <br>{{i.pincode}},<br>{{i.phone}}</address>
                                 <p>{{i.address}}</p>
-                                <a href="#" class="btn-small">Edit</a>
+                                <a href="{% url 'edit_address' i.id %}" class="btn-small">Edit</a>
                               </div>
                             </div>
                         </div>
@@ -157,7 +197,7 @@
                                                         <address>4299 Express Lane<br>
                                                             Sarasota, <br>FL 34249 USA <br>Phone: 1.941.227.4444</address>
                                                         <p>Sarasota</p>
-                                                        <a href="#" class="btn-small">Edit</a>
+                                                        <a href="" class="btn-small">Edit</a>
                                                     </div>
                                                 </div>
                                             </div>

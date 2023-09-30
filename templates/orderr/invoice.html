@@ -5,10 +5,11 @@
 {% block content %}
 <div class="container" style="margin-top: 50px;">
     <center><i class="fas fa-check-circle" style="font-size: 72px;margin-bottom: 20px;color: #28A745;"></i></center>
-    <h2 class="text-center">Order Successful</h2>
+    <h2 class="text-center">Invoice</h2>
 	<br>
 	<div class="text-center">
-		<a href="{% url 'store' %}" class="btn btn-success">Shop more</a>
+		<a href="" class="btn btn-success">Back</a>
+        <a href="{% url 'generateinvoice' item.id %}" class="btn btn-success ">Download Invoice</a>
 	</div>
 </div>
 
@@ -23,23 +24,20 @@
                         <!-- Start .row -->
                         <div class="col-lg-6">
                             <!-- col-lg-6 start here -->
-                            <div class="invoice-logo"><img src="{% static 'assets\imgs\theme\logo2.jpeg' %}" alt="Invoice logo" style="max-height: 40px;"></div>
+                            <div class="invoice-logo"><img src="{% static 'assets/imgs/theme/logo2.jpeg' %}" alt="Invoice logo" style="max-height: 80px;"></div>
                         </div>
                         <!-- col-lg-6 end here -->
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 text-end">
                             <!-- col-lg-6 start here -->
                             <div class="invoice-from">
-                                <ul class="list-unstyled text-right">
+                                <ul class="list-unstyled">
                                     <li><strong>Invoiced To</strong></li>
-                                    <li>{{order.full_name}}</li>
-                                    <li>{{order.address_line_1}} {%if order.address_line_2%}{{order.address_line_2}} {% endif %}</li>
-                                    <li>{{order.city}}, {{order.state}}</li>
-                                    <li>{{order.country}}</li>
+                                    <li>{{item.full_name}}</li>
+                                    <li>{{item.address_line_1}} {%if item.address_line_2%}{{item.address_line_2}} {% endif %}</li>
+                                    <li>{{item.city}}, {{item.state}}</li>
+                                    <li>{{item.country}}</li>
+                                    
                                 </ul>
-                                
-                                {% if order.status == 'Delivered' %}
-                                <a href="{% url "invoice" order_item_id=order.id %}">Download Invoice</a>
-                                {% endif %}
                             </div>
                         </div>
                         <!-- col-lg-6 end here -->
@@ -48,10 +46,10 @@
                             <div class="invoice-details mt25">
                                 <div class="well">
                                     <ul class="list-unstyled mb0">
-                                        <li><strong>Order</strong> #{{order.order_number}}</li>
-                                        <li><strong>Transaction ID</strong> {{payment.payment_id}}</li>
-                                        <li><strong>Order Date:</strong> {{order.created_at}}</li>
-                                        <li><strong>Status:</strong> {{order.status}}</li>
+                                        <li><strong>Order</strong> #{{item.order_number}}</li>
+                                        <li><strong>Transaction ID</strong> {{item.payment.payment_id}}</li>
+                                        <li><strong>Order Date:</strong> {{item.created_at}}</li>
+                                        <li><strong>Status:</strong> {{item.payment.status}}</li>
                                     </ul>
                                 </div>
                             </div>
@@ -63,44 +61,47 @@
                                             <tr>
                                                 <th class="per70 text-center">Products</th>
                                                 <th class="per5 text-center">Qty</th>
-                                                <th class="per6 text-centert">status</th>
-                                                <th class="per25 text-center">Total</th>
+                                                <th class="per5 text-center">Price</th>
                                                 <th class="per25 text-center">Total</th>
                                             </tr>
                                         </thead>
-                                        
                                         <tbody>
-                                          {% for item in ordered_products %}
+                                          {% for ite in items  %}
                                             <tr>
-                                                <td>{{item.Product.product_name}}
-                                                  <p class="text-muted small">
-                                                    Size : {{item.Product.size}}
-                                          		  </p>
+
+                                                <td>{{ite.Product.product_name}}
+                                                    {% comment %} <p class="text-muted small">
+                                          					
+                                          				Fr : {{ item.product_variation.flavour | capfirst }} <br>
+                                          				Weight :  {{ item.product_variation.weight  | capfirst }}
+                                          		    </p> {% endcomment %}
                                                 </td>
-                                                <td class="text-center">{{item.quantity}}</td>
-                                                <td class="text-center">{{item.status}}</td>
+                                                <td class="text-center">{{ite.quantity}}</td>
                                                 
-                                                <td class="text-center">₹{{item.product_price}}</td>
-                                                
+                                                <td class="text-center">₹{{ite.Product.prize}}</td>
+                                                <td class="text-center">₹{{ite.product_price}}</td>
                                             </tr>
-                                          {% endfor %}
-                                          
+                                            {% endfor %}
                                         </tbody>
-                                        {% for i in ordered_products  %}
+                                         {% for i in items  %}
                                         <tfoot>
-                                            
                                             <tr>
-                                                <th colspan="2" class="text-right">Sub Total:</th>
+                                                <th colspan="3" class="text-right">Sub Total:</th>
                                                 <th class="text-center">₹{{i.product_price}}</th>
                                             </tr>
                                             <tr>
-                                                <th colspan="2" class="text-right">Tax:</th>
-                                                <th class="text-center">₹{{order.tax}}</th>
+                                                <th colspan="3" class="text-right">Tax:</th>
+                                                <th class="text-center">₹{{i.order.tax}}</th>
                                             </tr>
-
+                                            {% comment %} {% if discount != 0 %}
                                             <tr>
-                                                <th colspan="2" class="text-right">Grand Total:</th>
-                                                <th class="text-center">₹{{order.order_total}}</th>
+                                                <th colspan="3" class="text-right">Coupon discount</th>
+                                                <th class="text-center">₹{{discount}}</th>
+                                            </tr>
+                                            {% endif %} {% endcomment %}
+                                            <tr> 
+                                                <th colspan="3" class="text-right">Grand Total:</th>
+                                                <th class="text-center">₹{{i.order.order_total}}</th>
                                             </tr>
                                         </tfoot>
                                         {% endfor %}
@@ -120,7 +121,6 @@
         </div>
         <!-- col-lg-12 end here -->
     </div>
-    </div>
+</div>
 
 {% endblock %}
-

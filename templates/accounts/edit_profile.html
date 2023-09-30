@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content  %}
+
+<form method="post">
+    {% csrf_token %}
+    <label for="first_name">Name:</label>
+    <input type="text" name="first_name" value="{{ user.first_name }}" required><br>
+  
+    <label for="last_name">Last Name:</label>
+    <input type="text" name="last_name" value="{{ user.last_name }}" required><br>
+  
+
+    <label for="email">email:</label>
+    <input type="text" name="email" value="{{ user.email }}" required><br>
+  
+    <label for="phone">Phone:</label>
+    <input type="text" name="phone" value="{{ user.phone_number }}" required><br>
+  
+    <input type="submit" value="Update Address">
+  </form>
+  {% endblock  %}

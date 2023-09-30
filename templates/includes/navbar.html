@@ -57,14 +57,14 @@
                     </div>
                     <div class="header-right">
                         <div class="search-style-2">
-                            <form action="#">
-                                <select class="select-active">
+                            <form action=" {% url 'search' %} " method="GET">
+                                {% comment %} <select class="select-active">
                                     <option>All Categories</option>
                                     {% if category in category_list %}
                                         <option>{{category.id}}</option>
                                     
                                     {% else %}
-                                    {% endif %}
+                                    {% endif %} {% endcomment %}
                                     
                                     {% comment %} <option>Men's</option>
                                     <option>Cellphones</option>
@@ -75,8 +75,12 @@
                                     <option>Luggage</option>
                                     <option>Shoes</option>
                                     <option>Mother & Kids</option> {% endcomment %}
-                                </select>
-                                <input type="text" placeholder="Search for items...">
+                                {% comment %} </select> {% endcomment %}
+                                <input type="text" placeholder="Search for items..." name="keyword">
+                                <button type="submit" >Search
+                                    <!-- Add your search icon here, e.g., an image or an icon font -->
+                                    <i class="fas fa-search"></i>
+                                </button>
                             </form>
                         </div>
                         <div class="header-action-right">

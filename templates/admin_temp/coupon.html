@@ -1,0 +1,43 @@
+{% extends "admin_temp/base.html" %}
+
+
+{% load static %}
+
+{% block content %}
+<a href="{% url 'addcoupon'%}" class="btn btn-xs" style = "background: grey">Add new coupon</a>
+<div class="card mb-4">
+                
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <div class="table-responsive" id = 'producttable'>
+                            <table class="table align-middle table-nowrap mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        
+                                        <th class="align-middle text-center" scope="col">coupon_code</th>
+                                        <th class="align-middle text-center" scope="col">is_expired </th>
+                                        <th class="align-middle text-center" scope="col">discount_price</th>
+                                        <th class="align-middle text-center" scope="col">minimum_amount</th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for i in coup  %}
+                                
+                                
+                                    <tr>
+                                        <td class="align-middle text-center">{{i.coupon_code}}</a> </td>
+                                        <td class="align-middle text-center">{{i.is_expired}}</td>
+                                        <td class="align-middle text-center">{{i.discount_price}}</td>
+                                        <td class="align-middle text-center">{{i.minimum_amount}}</td>
+                                        
+                                    </tr>
+                                {% endfor %}
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- table-responsive end// -->
+                </div>
+            </div>
+{% endblock content %}

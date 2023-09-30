@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from .forms import registrationform
 from .models import Accounts, Address
+from orders.models import Order
 from django.contrib import messages,auth
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
@@ -15,6 +16,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.http import HttpResponse
 from carts.views import _cart_id
 from carts.models import cart,cartitem
+from orders.models import Order,Wallet
 
 
 # Create your views here.
@@ -200,8 +202,19 @@ def logout(request):
 def dashboard(request):
     user= request.user
     address = Address.objects.filter(user=user)
+    orders = Order.objects.filter(user=user)
+    wallet = Wallet.objects.filter(user=user)
     print(address)
-    return render(request,'accounts/dashboard.html',{'address':address})
+    orders = Order.objects.order_by('-created_at').filter(user_id=user,is_ordered=True)
+    orders_count = orders.count()
+    context={
+        'address':address,
+        'orders_count': orders_count,
+        'add':address[0],
+        'orders':orders,
+        'wallet':wallet,
+    }
+    return render(request,'accounts/dashboard.html',context)
 
 
 def verify_code(request):
@@ -300,6 +313,64 @@ def add_address(request):
         address.save()
         return redirect('checkout')  
     return render(request, 'accounts/dashboard.html')
+
+
+
+
+from django.shortcuts import get_object_or_404
+def edit_address(request, id):
+    address = get_object_or_404(Address, pk=id)
+
+    if request.method == 'POST':
+        # Handle the form submission to update the address details
+        name = request.POST.get('name')
+        last_name = request.POST['last_name']
+        address_text = request.POST.get('address')
+        city = request.POST.get('city')
+        state = request.POST.get('state')
+        pincode = request.POST.get('pincode')
+        phone = request.POST.get('phone')
+
+        # Update the address fields
+        address.name = name
+        print(address.name)
+        address.last_name = last_name
+        print(address.last_name)
+        address.address = address_text
+        address.city = city
+        address.state = state
+        address.pincode = pincode
+        address.phone = phone
+        address.save()
+
+        return redirect('checkout')
+
+    return render(request, 'accounts/edit-address.html', {'address': address})
+
+def edit_profile(request,id):
+    user = request.user
+    context={}
+
+    if request.method=='POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST['last_name']
+        email = request.POST['email']
+        phone = request.POST.get('phone')
+
+
+        user.first_name = first_name
+        print(user.first_name)
+        user.last_name = last_name
+        print(user.last_name)
+        user.email = email
+        user.phone_number = phone
+        user.save()
+      
+
+        return redirect('dashboard')
+
+
+    return render(request,'accounts/edit_profile.html',context)
 
 
 

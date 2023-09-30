@@ -23,6 +23,7 @@
                         
                     </div>
                     <div class="row product-grid-3">
+                        
                     {% for product in products %}
                     
                     
@@ -62,10 +63,14 @@
                                         <span>₹ {{product.prize}}</span>
                                         {% comment %} <span class="old-price">$245.8</span> {% endcomment %}
                                     </div>
+                                    {% if product.stock > 0 %}
                                     <div class="product-action-1 show">
                                         <a aria-label="Add To Cart" class="action-btn hover-up" href="{% url 'add_cart' product.id %}"><i
                                                 class="fi-rs-shopping-bag-add"></i></a>
                                     </div>
+                                    {% else %}
+                                        <p>This product is currently out of stock.</p>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>

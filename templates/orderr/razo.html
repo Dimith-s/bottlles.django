@@ -5,16 +5,18 @@
 {% block content %}
 {% for item in order %}
 <tr>
-    <td class="image product-thumbnail"><img src="{{ item.product.images.url }}"
-            alt="#"></td>
+    <td class="image product-thumbnail"><img src="{{ item.product.images.url }}" alt="#" style="width: 100px; border: 2px solid #3498db; border-radius: 5px; margin: 5px; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);"></td>
     <td>
         <h5><a href="{{cart_item.product.get_url}}">{{item.product.product_name}}</a></h5> <span class="product-qty"></span>
     </td>
-    <td> {{ item.quantity }}</td>
-    <td>{{item.product.prize}}</td>
+    <td> quantity {{ item.quantity }}</td><br>
+    <td>price ₹{{item.product.original_price}}</td><br>
+    
+     
 </tr>
 
 {% endfor %}
+
 
 
    
@@ -23,7 +25,7 @@
         {% comment %} <button type='submit' id="razorpayButton" class="btn btn-primary">Pay with Razorpay</button> {% endcomment %}
 
 
-        <button id="rzp-button1">Pay</button>
+        <button id="rzp-button1" style="background-color: #3498db; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Pay</button>
     
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
@@ -39,7 +41,7 @@
             //alert(response.razorpay_payment_id);
             //alert(response.razorpay_order_id);
             //alert(response.razorpay_signature)
-            window.location.href = "{% url 'razorpay_payment' id=address.id %}";
+            window.location.href = "{% url 'razorpay_payment' id=address.id discount_amount=discount %}";
             
         },
         

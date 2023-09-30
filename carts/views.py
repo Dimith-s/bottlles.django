@@ -6,6 +6,9 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from accounts.models import Address
 from django.http import HttpResponse
+from store.models import coupon
+from django.contrib import messages
+from django.http import HttpResponseRedirect
 
 # Create your views here.
 def _cart_id(request):
@@ -114,10 +117,12 @@ def cart_page(request,total=0,quantity=0,cart_items=None):
             cart_items = cartitem.objects.filter(user=request.user,is_active=True)
         else:
             cart_model = cart.objects.get(cart_id = _cart_id(request))
+            print(cart_model)
             cart_items = cartitem.objects.filter(cart=cart_model,is_active=True)
         for cart_item in cart_items:
-            total += (cart_item.product.prize * cart_item.quantity)
+            total += (cart_item.product.original_price() * cart_item.quantity)
             quantity += cart_item.quantity
+            
     except cart.DoesNotExist:
         pass
 
@@ -132,6 +137,8 @@ def cart_page(request,total=0,quantity=0,cart_items=None):
 
 @login_required(login_url='login')
 def checkout(request,total=0,quantity=0,cart_items=None):
+    discount_price=0
+    grand_total = 0
     try:
         # cart_model = cart.objects.get(cart_id = _cart_id(request))
         # cart_items = cartitem.objects.filter(cart=cart_model,is_active=True)
@@ -141,16 +148,37 @@ def checkout(request,total=0,quantity=0,cart_items=None):
         address = Address.objects.filter(user=user)
         print('address : ',address)
         for cart_item in cart_items:
-            total += (cart_item.product.prize * cart_item.quantity)
+            total += (cart_item.product.original_price() * cart_item.quantity)
             quantity += cart_item.quantity
+        print('Session Data in checkout view:', request.session)
+            
+
+        applied_coupon_code = request.session.get("applied_coupon")
+        print('ses:',applied_coupon_code)
+
+        if applied_coupon_code:
+            try:
+                coupon_obj = coupon.objects.get(coupon_code=applied_coupon_code)
+                print('obj:',coupon_obj)
+                discount_amount = coupon_obj.discount_price  # Get the discount amount
+                
+                discount_price = discount_amount
+                print('dis:',discount_price)
+            except coupon.DoesNotExist:
+                pass 
     except cart.DoesNotExist:
         pass
+
+    grand_total = total - discount_price
+    print('di:',grand_total)
 
     context = {
         'total': total,
         'quantity': quantity,
         'cart_items':cart_items,
         'address' : address,
+        'discount_price': discount_price,
+        'grand_total': grand_total
     }
     return render(request,'store/checkout.html',context)
 

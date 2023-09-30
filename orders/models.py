@@ -41,7 +41,7 @@ class Order(models.Model):
     order_note = models.CharField(max_length=100,blank=True,null=True)
     order_total = models.FloatField()
     tax = models.FloatField(null=True)
-    status = models.CharField(max_length=10,choices=STATUS,default='New')
+    status = models.CharField(max_length=100,choices=STATUS,default='New')
     ip = models.CharField(blank=True,max_length=20)
     is_ordered = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -78,5 +78,10 @@ class OrderProduct(models.Model):
         return self.Product.product_name
     
 
+class Wallet(models.Model):
+    user = models.OneToOneField(Accounts, on_delete=models.CASCADE)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
+    def __str__(self):
+        return f"Wallet of {self.user.username}"
  

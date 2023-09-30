@@ -15,5 +15,7 @@ urlpatterns = [
     # path('forgotPassword_otp/', views.forgotPassword_otp,name='forgotPassword_otp'),
     path('resetPassword/', views.resetPassword,name='resetPassword'),
     path('add_address/', views.add_address,name='add_address'),
+    path('edit_address/<int:id>/', views.edit_address, name='edit_address'),
+    path('edit_profile/<int:id>/', views.edit_profile,name='edit_profile'),
     
 ]
