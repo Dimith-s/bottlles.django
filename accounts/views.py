@@ -202,6 +202,10 @@ def logout(request):
 def dashboard(request):
     user= request.user
     address = Address.objects.filter(user=user)
+    if address.count()==0:
+        adress = None
+    else:
+        adress = address[0]
     orders = Order.objects.filter(user=user)
     wallet = Wallet.objects.filter(user=user)
     print(address)
@@ -210,7 +214,7 @@ def dashboard(request):
     context={
         'address':address,
         'orders_count': orders_count,
-        'add':address[0],
+        'add':adress,
         'orders':orders,
         'wallet':wallet,
     }
